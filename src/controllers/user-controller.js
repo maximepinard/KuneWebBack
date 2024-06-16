@@ -1,22 +1,21 @@
-import UserModel from "../models/user-model.js";
+import userService from '../models/user-service.js';
 
 /**
  * Register
  * @param {import("express").Request} req
  * @param {import("express").Response} res
  */
-
 async function register(req, res) {
   const { username, password, email } = req.body;
   try {
-    const userId = await UserModel.createUser(username, password, email);
-    req.session.user = { id: userId, login: username };
+    const user = await userService.createUser(username, password, email);
+    req.session.user = { id: user.id, login: user.login, role: user.role };
     req.session.save(function (err) {
-      return res.send({ message: "Registered and logged in successfully" });
+      return res.send({ message: 'Registered and logged in successfully' });
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Registration failed" });
+    return res.status(500).json({ message: 'Registration failed' });
   }
 }
 
@@ -28,18 +27,18 @@ async function register(req, res) {
 async function login(req, res) {
   const { username, password } = req.body;
   try {
-    const user = await UserModel.authenticateUser(username, password);
+    const user = await userService.authenticateUser(username, password);
     if (user) {
-      req.session.user = { id: user.id, login: user.login };
+      req.session.user = { id: user.id, login: user.login, role: user.role };
       req.session.save(function (err) {
-        return res.send({ message: "Logged in successfully" });
+        return res.send({ message: 'Logged in successfully' });
       });
     } else {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(400).json({ message: 'Invalid username or password' });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Login failed" });
+    res.status(500).json({ message: 'Login failed' });
   }
 }
 
@@ -52,9 +51,9 @@ function logout(req, res) {
   req.session.destroy((err) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: "Logout failed" });
+      return res.status(500).json({ message: 'Logout failed' });
     } else {
-      return res.send({ message: "Logged out successfully" });
+      return res.send({ message: 'Logged out successfully' });
     }
   });
 }
