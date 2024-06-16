@@ -1,3 +1,4 @@
+import { Sequelize } from 'sequelize';
 import { Video, checkUserRole } from './models.js';
 
 const VideoService = {
