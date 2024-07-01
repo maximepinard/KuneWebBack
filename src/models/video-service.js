@@ -33,6 +33,22 @@ const VideoService = {
     });
     return await VideoService.getVideoById(newVideo.id, req);
   },
+  createVideosBulk: async (videos, req) => {
+    const userId = req.session.user.id;
+    const videosToCreate = videos.map((video) => ({
+      user_id: userId,
+      title: video.title,
+      artist: video.artist,
+      code: video.code,
+      startGuess: video.startGuess,
+      endGuess: video.endGuess,
+      startReveal: video.startReveal,
+      endReveal: video.endReveal,
+      type: video.type || 'default',
+      date: video.date || new Date().toISOString().split('T')[0]
+    }));
+    return await Video.bulkCreate(videosToCreate);
+  },
   updateVideo: async (id, video, req) => {
     const where = { ...checkUserRole(req), id };
     await Video.update(

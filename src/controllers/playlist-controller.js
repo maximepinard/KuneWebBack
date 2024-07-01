@@ -1,5 +1,9 @@
 import playlistService from '../models/playlist-service.js';
 import ContentPlaylistService from '../models/content-playlist-service.js';
+import axios from 'axios';
+import { config } from 'dotenv';
+
+config();
 
 /**
  * Add a playlist
@@ -104,4 +108,44 @@ async function deleteP(req, res) {
   }
 }
 
-export default { add, list, update, deleteP, getContent };
+/**
+ * Delete a playlist
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+async function getYoutubePlaylistInfo(req, res) {
+  try {
+    const playlistId = req.params.id;
+    const API_KEY = process.env.GOOGLE_API_KEY;
+    let nextPageToken = '';
+    let allVideos = [];
+
+    do {
+      const response = await axios.get('https://www.googleapis.com/youtube/v3/playlistItems', {
+        params: {
+          part: 'snippet',
+          playlistId,
+          maxResults: 200,
+          key: API_KEY,
+          pageToken: nextPageToken
+        }
+      });
+
+      const data = response.data;
+      const videoItems = data.items.map((item) => ({
+        title: item.snippet.title,
+        videoId: item.snippet.resourceId.videoId
+      }));
+
+      allVideos = allVideos.concat(videoItems);
+      nextPageToken = data.nextPageToken;
+    } while (nextPageToken);
+
+    return res.send(allVideos);
+  } catch (error) {
+    console.error('Error fetching videos:', error);
+    return res.status(500).json({ error: 'Error fetching videos' });
+  }
+}
+
+export default { add, list, update, deleteP, getContent, getYoutubePlaylistInfo };

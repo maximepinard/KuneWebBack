@@ -1,12 +1,12 @@
-import { Sequelize, DataTypes, Model } from "sequelize";
-import { config } from "dotenv";
+import { Sequelize, DataTypes, Model } from 'sequelize';
+import { config } from 'dotenv';
 
 config();
 
 const sequelize = new Sequelize({
-  dialect: "sqlite",
+  dialect: 'sqlite',
   storage: process.env.DATABASE_FILE,
-  logging: process.env.DEBUG === "true" ? console.log : false, // Set to true if you want to see SQL queries in the console
+  logging: process.env.DEBUG === 'true' ? console.log : false // Set to true if you want to see SQL queries in the console
 });
 
 class User extends Model {}
@@ -18,15 +18,15 @@ User.init(
     password: DataTypes.STRING,
     created_at: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     last_modified: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    last_login: DataTypes.DATE,
+    last_login: DataTypes.DATE
   },
-  { sequelize, modelName: "User" },
+  { sequelize, modelName: 'User' }
 );
 
 class Video extends Model {}
@@ -36,8 +36,8 @@ Video.init(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
-      },
+        key: 'id'
+      }
     },
     title: DataTypes.STRING,
     artist: DataTypes.STRING,
@@ -48,16 +48,16 @@ Video.init(
     endReveal: DataTypes.INTEGER,
     created_at: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     last_modified: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     type: DataTypes.STRING,
-    date: DataTypes.DATE,
+    date: DataTypes.DATE
   },
-  { sequelize, modelName: "Video" },
+  { sequelize, modelName: 'Video' }
 );
 
 class Image extends Model {}
@@ -67,15 +67,15 @@ Image.init(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
-      },
+        key: 'id'
+      }
     },
     name: DataTypes.STRING,
     description: DataTypes.STRING,
     type: DataTypes.STRING,
-    date: DataTypes.STRING,
+    date: DataTypes.STRING
   },
-  { sequelize, modelName: "Image" },
+  { sequelize, modelName: 'Image' }
 );
 
 class Playlist extends Model {}
@@ -85,21 +85,22 @@ Playlist.init(
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
-      },
+        key: 'id'
+      }
     },
     name: DataTypes.STRING,
     created_at: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     last_modified: {
       type: DataTypes.DATE,
-      defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     },
     type: DataTypes.STRING,
+    public: DataTypes.BOOLEAN
   },
-  { sequelize, modelName: "Playlist" },
+  { sequelize, modelName: 'Playlist' }
 );
 
 class ContentPlaylist extends Model {}
@@ -107,29 +108,30 @@ ContentPlaylist.init(
   {
     content_type: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      primaryKey: true
     },
     content_id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      primaryKey: true
     },
     playlist_id: {
       type: DataTypes.INTEGER,
       references: {
         model: Playlist,
-        key: "id",
-      },
+        key: 'id',
+        onDelete: 'CASCADE'
+      }
     },
     user_id: {
       type: DataTypes.INTEGER,
       references: {
         model: User,
-        key: "id",
-      },
+        key: 'id'
+      }
     },
-    order_num: DataTypes.INTEGER,
+    order_num: DataTypes.INTEGER
   },
-  { sequelize, modelName: "ContentPlaylist" },
+  { sequelize, modelName: 'ContentPlaylist' }
 );
 
 class MetaData extends Model {}
@@ -137,16 +139,16 @@ MetaData.init(
   {
     content_id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      primaryKey: true
     },
     key: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      primaryKey: true
     },
     value: DataTypes.TEXT,
-    type: DataTypes.STRING,
+    type: DataTypes.STRING
   },
-  { sequelize, modelName: "MetaData" },
+  { sequelize, modelName: 'MetaData' }
 );
 
 class GameSet extends Model {}
@@ -154,31 +156,17 @@ GameSet.init(
   {
     name: DataTypes.STRING,
     options: DataTypes.TEXT,
-    password: DataTypes.STRING,
+    password: DataTypes.STRING
   },
-  { sequelize, modelName: "GameSet" },
+  { sequelize, modelName: 'GameSet' }
 );
 
 const checkUserRole = (req) => {
-  if (
-    req.session &&
-    (req.session.user.role === "admin" ||
-      req.session.user.role === "super-admin")
-  ) {
+  if (req.session && (req.session.user.role === 'admin' || req.session.user.role === 'super-admin')) {
     return {};
   } else {
     return { user_id: req.session.user.id };
   }
 };
 
-export {
-  sequelize,
-  User,
-  Video,
-  Playlist,
-  ContentPlaylist,
-  Image,
-  MetaData,
-  GameSet,
-  checkUserRole,
-};
+export { sequelize, User, Video, Playlist, ContentPlaylist, Image, MetaData, GameSet, checkUserRole };

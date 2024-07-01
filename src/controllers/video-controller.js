@@ -17,6 +17,22 @@ async function add(req, res) {
 }
 
 /**
+ * Add a video
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ */
+async function addBulk(req, res) {
+  try {
+    const newVideo = req.body; // Assuming the video data is sent in the request body
+    const video = await videoService.createVideosBulk(newVideo, req);
+    return res.status(201).send(video); // 201 Created
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(error.message);
+  }
+}
+
+/**
  * List all video
  * @param {import("express").Request} req
  * @param {import("express").Response} res
@@ -64,4 +80,4 @@ async function deleteV(req, res) {
   }
 }
 
-export default { add, list, update, deleteV };
+export default { add, addBulk, list, update, deleteV };
