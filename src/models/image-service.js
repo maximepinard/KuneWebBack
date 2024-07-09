@@ -44,7 +44,7 @@ const ImageService = {
   deleteImage: async (id, req) => {
     const where = { ...checkUserRole(req), id };
     const whereContent = { ...checkUserRole(res), content_id: id, content_type: 'image' };
-    await ContentPlaylist.destroy({ whereContent });
+    await ContentPlaylist.destroy({ where: whereContent });
     await Image.destroy({ where });
     return true;
   }

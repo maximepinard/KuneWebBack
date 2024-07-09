@@ -71,7 +71,7 @@ const VideoService = {
   deleteVideo: async (id, req) => {
     const where = { ...checkUserRole(req), id };
     const whereContent = { ...checkUserRole(req), content_id: id, content_type: 'video' };
-    await ContentPlaylist.destroy({ whereContent });
+    await ContentPlaylist.destroy({ where: whereContent });
     await Video.destroy({ where });
     return true;
   }
