@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { Video, checkUserRole } from './models.js';
+import { ContentPlaylist, Video, checkUserRole } from './models.js';
 
 const VideoService = {
   getAllVideos: async (req) => {
@@ -70,6 +70,8 @@ const VideoService = {
   },
   deleteVideo: async (id, req) => {
     const where = { ...checkUserRole(req), id };
+    const whereContent = { ...checkUserRole(req), content_id: id, content_type: 'video' };
+    await ContentPlaylist.destroy({ whereContent });
     await Video.destroy({ where });
     return true;
   }

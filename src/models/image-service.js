@@ -1,4 +1,4 @@
-import { Image, checkUserRole } from './models.js';
+import { ContentPlaylist, Image, checkUserRole } from './models.js';
 
 const ImageService = {
   getAllImages: async (req) => {
@@ -43,6 +43,8 @@ const ImageService = {
   },
   deleteImage: async (id, req) => {
     const where = { ...checkUserRole(req), id };
+    const whereContent = { ...checkUserRole(res), content_id: id, content_type: 'image' };
+    await ContentPlaylist.destroy({ whereContent });
     await Image.destroy({ where });
     return true;
   }
