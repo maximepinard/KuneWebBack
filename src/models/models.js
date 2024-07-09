@@ -116,11 +116,7 @@ ContentPlaylist.init(
     },
     playlist_id: {
       type: DataTypes.INTEGER,
-      references: {
-        model: Playlist,
-        key: 'id',
-        onDelete: 'CASCADE'
-      }
+      primaryKey: true
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -131,7 +127,7 @@ ContentPlaylist.init(
     },
     order_num: DataTypes.INTEGER
   },
-  { sequelize, modelName: 'ContentPlaylist' }
+  { sequelize, modelName: 'ContentPlaylist', timestamps: false }
 );
 
 class MetaData extends Model {}
