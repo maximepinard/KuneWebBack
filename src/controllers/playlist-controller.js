@@ -50,9 +50,7 @@ async function list(req, res) {
  */
 async function listWithContent(req, res) {
   try {
-    console.log('listWithContent');
     const playlists = await playlistService.getAllPlaylistsWithContentAndUser(req.session.user.id);
-    console.log('playlists', playlists);
     res.status(200).json(playlists);
   } catch (error) {
     console.error(error);
